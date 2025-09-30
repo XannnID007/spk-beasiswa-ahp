@@ -24,6 +24,21 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f3f4f6;
+            position: relative;
+        }
+
+        /* Background Image dengan Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/img/bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            opacity: 0.05;
+            z-index: -1;
         }
 
         /* Navbar Fixed */
@@ -52,8 +67,28 @@
             margin-right: auto;
         }
 
-        .navbar-brand i {
-            font-size: 28px;
+        /* Logo Image Styling */
+        .navbar-brand .logo-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .navbar-brand .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .navbar-brand .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .navbar-brand .brand-subtitle {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 500;
         }
 
         .navbar-right {
@@ -257,6 +292,10 @@
             .main-content {
                 margin-left: 0;
             }
+
+            .navbar-brand .brand-subtitle {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -265,8 +304,11 @@
     <!-- Navbar Top -->
     <nav class="navbar-top">
         <a href="{{ route('admin.dashboard') }}" class="navbar-brand">
-            <i class="fas fa-graduation-cap"></i>
-            <span>SPK Beasiswa</span>
+            <img src="{{ asset('img/logo.jpg') }}" alt="Logo" class="logo-img">
+            <div class="brand-text">
+                <span class="brand-name">SPK Beasiswa</span>
+                <span class="brand-subtitle">MA Muhammadiyah 1 Bandung</span>
+            </div>
         </a>
 
         <div class="navbar-right">

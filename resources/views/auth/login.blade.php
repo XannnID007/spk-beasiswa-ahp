@@ -21,12 +21,30 @@
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Image dengan Dark Overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/img/bg.jpg') no-repeat center center;
+            background-size: cover;
+            filter: brightness(0.3);
+            z-index: 0;
         }
 
         .login-container {
             width: 100%;
             max-width: 400px;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .login-card {
@@ -43,9 +61,14 @@
             text-align: center;
         }
 
-        .login-header i {
-            font-size: 48px;
+        .login-header .logo-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
             margin-bottom: 15px;
+            border-radius: 12px;
+            background: white;
+            padding: 8px;
         }
 
         .login-header h4 {
@@ -177,7 +200,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-graduation-cap"></i>
+                <img src="{{ asset('img/logo.jpg') }}" alt="Logo" class="logo-img">
                 <h4>SPK Beasiswa</h4>
                 <p>MA Muhammadiyah 1 Bandung</p>
             </div>

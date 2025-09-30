@@ -11,6 +11,7 @@ use App\Models\PengajuanBeasiswa;
 use App\Models\HasilPerhitungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PerhitunganController extends Controller
 {
@@ -46,11 +47,6 @@ class PerhitunganController extends Controller
     public function proses()
     {
         try {
-            DB::beginTransaction();
-
-            // Hapus hasil perhitungan sebelumnya
-            HasilPerhitungan::truncate();
-
             // Ambil kriteria dengan bobotnya
             $kriteria = Kriteria::orderBy('kode_kriteria')->get();
 
@@ -63,6 +59,12 @@ class PerhitunganController extends Controller
             if ($siswaIds->count() == 0) {
                 return back()->with('error', 'Tidak ada siswa dengan penilaian lengkap!');
             }
+
+            // Mulai transaction
+            DB::beginTransaction();
+
+            // Hapus hasil perhitungan sebelumnya
+            HasilPerhitungan::truncate();
 
             $hasilSiswa = [];
 
@@ -110,12 +112,20 @@ class PerhitunganController extends Controller
                 $ranking++;
             }
 
+            // Commit transaction
             DB::commit();
 
             return back()->with('success', 'Perhitungan AHP berhasil! Total ' . count($hasilSiswa) . ' siswa telah dihitung.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            // Rollback hanya jika transaction masih aktif
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
+            // Log error untuk debugging
+            Log::error('Error pada proses perhitungan AHP: ' . $e->getMessage());
+
+            return back()->with('error', 'Terjadi kesalahan saat perhitungan: ' . $e->getMessage());
         }
     }
 
