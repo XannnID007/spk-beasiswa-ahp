@@ -228,5 +228,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         echo "\n2 Program Beasiswa default berhasil ditambahkan!\n";
+
+        $this->call(SiswaSeeder::class);
     }
 }

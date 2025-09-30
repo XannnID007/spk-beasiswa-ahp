@@ -7,14 +7,17 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="page-title">Data Kriteria Penilaian</h1>
-                <p class="page-subtitle">4 Kriteria metode AHP berdasarkan BAB III</p>
+                <p class="page-subtitle">4 Kriteria metode AHP</p>
             </div>
+            <a href="{{ route('admin.kriteria.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Tambah Kriteria
+            </a>
         </div>
     </div>
 
     <div class="alert alert-info">
         <i class="fas fa-info-circle"></i>
-        Kriteria dan bobot sudah ditetapkan sesuai perhitungan AHP pada BAB III skripsi. Data ini tidak disarankan untuk
+        Kriteria dan bobot sudah ditetapkan sesuai perhitungan AHP. Data ini tidak disarankan untuk
         diubah.
     </div>
 
@@ -23,12 +26,13 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th width="100">Kode</th>
+                        <th width="80">Kode</th>
                         <th>Nama Kriteria</th>
                         <th width="120">Bobot</th>
                         <th width="120">Persentase</th>
                         <th width="150">Sub-Kriteria</th>
                         <th>Keterangan</th>
+                        <th width="150">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +47,20 @@
                                 <span class="badge bg-info">{{ $k->sub_kriteria_count }} items</span>
                             </td>
                             <td>{{ $k->keterangan }}</td>
+                            <td>
+                                <a href="{{ route('admin.kriteria.edit', $k->id) }}" class="btn btn-sm btn-warning"
+                                    title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.kriteria.destroy', $k->id) }}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Yakin ingin menghapus kriteria ini? Ini akan mempengaruhi perhitungan AHP!')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -91,6 +109,11 @@
         .table tbody td {
             padding: 12px 15px;
             vertical-align: middle;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 13px;
         }
 
         .progress-box {
