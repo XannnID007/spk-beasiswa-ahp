@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Helpers\NumberHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kriteria extends Model
 {
@@ -21,6 +22,18 @@ class Kriteria extends Model
     protected $casts = [
         'bobot' => 'decimal:4',
     ];
+
+    protected $appends = ['formatted_bobot', 'formatted_percentage'];
+
+    public function getFormattedBobotAttribute()
+    {
+        return NumberHelper::formatWeight($this->bobot);
+    }
+
+    public function getFormattedPercentageAttribute()
+    {
+        return NumberHelper::formatPercentage($this->bobot);
+    }
 
     public function subKriteria()
     {

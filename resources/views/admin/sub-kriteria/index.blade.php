@@ -1,3 +1,7 @@
+@php
+    use App\Helpers\NumberHelper;
+@endphp
+
 @extends('layouts.admin')
 
 @section('title', 'Data Sub-Kriteria')
@@ -38,7 +42,8 @@
                                 <td><strong class="text-primary">{{ $sk->kriteria->kode_kriteria }}</strong></td>
                                 <td>{{ $sk->nama_sub_kriteria }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-success">{{ number_format($sk->nilai_sub, 6) }}</span>
+                                    <span
+                                        class="badge bg-success">{{ NumberHelper::formatSubCriteria($sk->nilai_sub) }}</span>
                                 </td>
                                 <td class="text-center">
                                     @if ($sk->range_min !== null && $sk->range_max !== null)

@@ -61,24 +61,13 @@ class PerhitunganController extends Controller
     public function proses()
     {
         try {
-            // Validasi AHP terlebih dahulu
+            // Tambahkan validasi lebih ketat
             $ahpValidation = $this->validateAhpConsistency();
             if (!$ahpValidation['is_valid']) {
                 return back()->withErrors(['error' => $ahpValidation['message']]);
             }
 
-            // Ambil kriteria dengan bobot yang sudah dihitung AHP
-            $kriteria = Kriteria::orderBy('kode_kriteria')->get();
-
-            // Validasi total bobot = 1
-            $totalBobot = $kriteria->sum('bobot');
-            if (abs($totalBobot - 1.0) > 0.001) {
-                return back()->withErrors([
-                    'error' => 'Total bobot kriteria tidak valid (' . number_format($totalBobot, 4) . '). Mohon hitung ulang bobot AHP.'
-                ]);
-            }
-
-            // Ambil siswa yang sudah dinilai lengkap (semua 4 kriteria)
+            // Validasi data siswa
             $siswaIds = Penilaian::select('siswa_id')
                 ->groupBy('siswa_id')
                 ->havingRaw('COUNT(DISTINCT kriteria_id) = 4')
@@ -88,100 +77,80 @@ class PerhitunganController extends Controller
                 return back()->withErrors(['error' => 'Tidak ada siswa dengan penilaian lengkap!']);
             }
 
-            // Mulai transaction
+            // Validasi total bobot kriteria = 1
+            $kriteria = Kriteria::orderBy('kode_kriteria')->get();
+            $totalBobot = $kriteria->sum('bobot');
+
+            if (abs($totalBobot - 1.0) > 0.001) {
+                return back()->withErrors([
+                    'error' => 'Total bobot kriteria harus = 1.0000. Saat ini: ' . number_format($totalBobot, 4)
+                ]);
+            }
+
             DB::beginTransaction();
 
-            // Hapus hasil perhitungan sebelumnya
+            // Reset hasil sebelumnya
             HasilPerhitungan::truncate();
 
             $hasilSiswa = [];
 
             foreach ($siswaIds as $siswaId) {
                 $skorTotal = 0;
-                $detailSkor = [];
+                $validPenilaian = true;
 
                 foreach ($kriteria as $k) {
-                    // Ambil penilaian siswa untuk kriteria ini
                     $penilaian = Penilaian::where('siswa_id', $siswaId)
                         ->where('kriteria_id', $k->id)
                         ->first();
 
-                    if ($penilaian && $penilaian->sub_kriteria_id) {
-                        $subKriteria = SubKriteria::find($penilaian->sub_kriteria_id);
-                        if ($subKriteria) {
-                            // Hitung: Bobot Kriteria × Nilai Sub-Kriteria
-                            $skorKriteria = $k->bobot * $subKriteria->nilai_sub;
-                            $skorTotal += $skorKriteria;
-
-                            $detailSkor[$k->kode_kriteria] = [
-                                'bobot' => $k->bobot,
-                                'nilai_sub' => $subKriteria->nilai_sub,
-                                'skor' => $skorKriteria
-                            ];
-                        }
+                    if (!$penilaian || !$penilaian->sub_kriteria_id) {
+                        $validPenilaian = false;
+                        break;
                     }
+
+                    $subKriteria = SubKriteria::find($penilaian->sub_kriteria_id);
+                    if (!$subKriteria) {
+                        $validPenilaian = false;
+                        break;
+                    }
+
+                    $skorTotal += $k->bobot * $subKriteria->nilai_sub;
                 }
 
-                $hasilSiswa[] = [
-                    'siswa_id' => $siswaId,
-                    'skor_akhir' => $skorTotal,
-                    'detail_skor' => $detailSkor
-                ];
-
-                // Log untuk debugging
-                Log::info("Perhitungan siswa $siswaId", [
-                    'skor_total' => $skorTotal,
-                    'detail' => $detailSkor
-                ]);
+                if ($validPenilaian) {
+                    $hasilSiswa[] = [
+                        'siswa_id' => $siswaId,
+                        'skor_akhir' => $skorTotal
+                    ];
+                }
             }
 
-            // Sorting berdasarkan skor tertinggi
-            usort($hasilSiswa, function ($a, $b) {
-                return $b['skor_akhir'] <=> $a['skor_akhir'];
-            });
+            // Urutkan berdasarkan skor tertinggi
+            usort($hasilSiswa, fn($a, $b) => $b['skor_akhir'] <=> $a['skor_akhir']);
 
             // Simpan hasil dengan ranking
-            $ranking = 1;
-            foreach ($hasilSiswa as $hasil) {
+            foreach ($hasilSiswa as $index => $hasil) {
                 HasilPerhitungan::create([
                     'siswa_id' => $hasil['siswa_id'],
                     'skor_akhir' => $hasil['skor_akhir'],
-                    'ranking' => $ranking,
-                    'status_kelulusan' => $ranking <= 10 ? 'lulus' : 'tidak_lulus', // Top 10 lulus
+                    'ranking' => $index + 1,
+                    'status_kelulusan' => ($index + 1) <= 10 ? 'lulus' : 'tidak_lulus',
                     'tanggal_perhitungan' => now(),
-                    'catatan' => 'Perhitungan menggunakan metode AHP dengan CR = ' .
-                        number_format($ahpValidation['cr'], 4)
+                    'catatan' => 'Perhitungan AHP dengan CR = ' . number_format($ahpValidation['cr'], 4)
                 ]);
-                $ranking++;
             }
 
-            // Commit transaction
             DB::commit();
-
-            // Log hasil
-            Log::info('Perhitungan AHP selesai', [
-                'total_siswa' => count($hasilSiswa),
-                'ahp_cr' => $ahpValidation['cr'],
-                'top_3_scores' => array_slice($hasilSiswa, 0, 3)
-            ]);
 
             return back()->with(
                 'success',
-                'Perhitungan AHP berhasil! Total ' . count($hasilSiswa) . ' siswa telah dihitung. ' .
-                    'Consistency Ratio = ' . number_format($ahpValidation['cr'], 4)
+                'Perhitungan berhasil! ' . count($hasilSiswa) . ' siswa telah dihitung dengan CR = ' .
+                    number_format($ahpValidation['cr'], 4)
             );
         } catch (\Exception $e) {
-            // Rollback hanya jika transaction masih aktif
-            if (DB::transactionLevel() > 0) {
-                DB::rollBack();
-            }
-
-            // Log error untuk debugging
-            Log::error('Error pada proses perhitungan AHP: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat perhitungan: ' . $e->getMessage()]);
+            DB::rollBack();
+            Log::error('Perhitungan Error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Gagal melakukan perhitungan: ' . $e->getMessage()]);
         }
     }
 

@@ -1,17 +1,20 @@
 <?php
 
+// 1. PERBAIKAN SERVICE AHPCALCULATORSERVICE
 namespace App\Services;
 
 use App\Models\Kriteria;
 use App\Models\AhpComparison;
 use App\Models\AhpCalculation;
-use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AhpCalculatorService
 {
-     private $randomIndex = [
-          1 => 0,
-          2 => 0,
+     // Tambahkan Random Index untuk AHP
+     private const RANDOM_INDEX = [
+          1 => 0.00,
+          2 => 0.00,
           3 => 0.58,
           4 => 0.90,
           5 => 1.12,
@@ -22,131 +25,100 @@ class AhpCalculatorService
           10 => 1.49
      ];
 
-     /**
-      * Bangun matriks perbandingan dari data yang ada
-      */
-     public function buildComparisonMatrix()
+     public function calculateAHP()
      {
-          $kriteria = Kriteria::orderBy('kode_kriteria')->get();
-          $n = $kriteria->count();
-          $matrix = [];
+          try {
+               DB::beginTransaction();
 
-          // Inisialisasi matrix dengan 0
-          for ($i = 0; $i < $n; $i++) {
-               for ($j = 0; $j < $n; $j++) {
-                    $matrix[$i][$j] = 0;
+               $kriteria = Kriteria::orderBy('kode_kriteria')->get();
+               $n = $kriteria->count();
+
+               if ($n < 2) {
+                    throw new \Exception('Minimal 2 kriteria diperlukan');
                }
-          }
 
-          // Isi diagonal dengan 1
-          for ($i = 0; $i < $n; $i++) {
-               $matrix[$i][$i] = 1;
-          }
+               // 1. Buat matriks perbandingan
+               $matrix = $this->buildComparisonMatrix($kriteria);
 
-          // Isi dari data perbandingan
-          $comparisons = AhpComparison::all();
+               // 2. Normalisasi matriks
+               $normalizedMatrix = $this->normalizeMatrix($matrix);
+
+               // 3. Hitung priority vector (bobot)
+               $priorityVector = $this->calculatePriorityVector($normalizedMatrix);
+
+               // 4. Hitung consistency
+               $lambdaMax = $this->calculateLambdaMax($matrix, $priorityVector);
+               $ci = ($lambdaMax - $n) / ($n - 1);
+               $cr = $n > 2 ? $ci / self::RANDOM_INDEX[$n] : 0;
+
+               $isConsistent = $cr <= 0.1;
+
+               // 5. Update bobot kriteria jika konsisten
+               if ($isConsistent) {
+                    foreach ($kriteria as $index => $k) {
+                         $k->update(['bobot' => $priorityVector[$index]]);
+                    }
+               }
+
+               // 6. Simpan hasil perhitungan
+               AhpCalculation::create([
+                    'comparison_matrix' => $matrix,
+                    'normalized_matrix' => $normalizedMatrix,
+                    'priority_vector' => $priorityVector,
+                    'lambda_max' => $lambdaMax,
+                    'consistency_index' => $ci,
+                    'consistency_ratio' => $cr,
+                    'is_consistent' => $isConsistent,
+                    'calculated_at' => now()
+               ]);
+
+               DB::commit();
+
+               return [
+                    'weights' => $priorityVector,
+                    'lambda_max' => $lambdaMax,
+                    'ci' => $ci,
+                    'cr' => $cr,
+                    'is_consistent' => $isConsistent
+               ];
+          } catch (\Exception $e) {
+               DB::rollBack();
+               Log::error('AHP Calculation Error: ' . $e->getMessage());
+               throw $e;
+          }
+     }
+
+     private function buildComparisonMatrix($kriteria)
+     {
+          $n = $kriteria->count();
+          $matrix = array_fill(0, $n, array_fill(0, $n, 1));
+
+          $comparisons = AhpComparison::with(['kriteriaFirst', 'kriteriaSecond'])->get();
 
           foreach ($comparisons as $comp) {
-               $idx1 = $kriteria->search(function ($k) use ($comp) {
-                    return $k->id == $comp->kriteria_1;
-               });
+               $i = $kriteria->search(fn($k) => $k->id == $comp->kriteria_1);
+               $j = $kriteria->search(fn($k) => $k->id == $comp->kriteria_2);
 
-               $idx2 = $kriteria->search(function ($k) use ($comp) {
-                    return $k->id == $comp->kriteria_2;
-               });
-
-               if ($idx1 !== false && $idx2 !== false) {
-                    $matrix[$idx1][$idx2] = $comp->nilai_perbandingan;
-                    $matrix[$idx2][$idx1] = 1 / $comp->nilai_perbandingan;
+               if ($i !== false && $j !== false) {
+                    $matrix[$i][$j] = $comp->nilai_perbandingan;
+                    $matrix[$j][$i] = 1 / $comp->nilai_perbandingan;
                }
           }
 
-          return [
-               'matrix' => $matrix,
-               'kriteria' => $kriteria
-          ];
+          return $matrix;
      }
 
-     /**
-      * Hitung bobot prioritas menggunakan geometric mean
-      */
-     public function calculatePriorityWeights($matrix)
+     private function normalizeMatrix($matrix)
      {
           $n = count($matrix);
-          $weights = [];
+          $normalized = array_fill(0, $n, array_fill(0, $n, 0));
 
-          // Geometric mean method
+          // Hitung total setiap kolom
+          $columnSums = array_fill(0, $n, 0);
           for ($i = 0; $i < $n; $i++) {
-               $product = 1;
                for ($j = 0; $j < $n; $j++) {
-                    $product *= $matrix[$i][$j];
+                    $columnSums[$j] += $matrix[$i][$j];
                }
-               $weights[$i] = pow($product, 1 / $n);
-          }
-
-          // Normalisasi
-          $sum = array_sum($weights);
-          for ($i = 0; $i < $n; $i++) {
-               $weights[$i] = $weights[$i] / $sum;
-          }
-
-          return $weights;
-     }
-
-     /**
-      * Hitung lambda max
-      */
-     public function calculateLambdaMax($matrix, $weights)
-     {
-          $n = count($matrix);
-          $lambdaMax = 0;
-
-          for ($i = 0; $i < $n; $i++) {
-               $sum = 0;
-               for ($j = 0; $j < $n; $j++) {
-                    $sum += $matrix[$i][$j] * $weights[$j];
-               }
-               $lambdaMax += $sum / $weights[$i];
-          }
-
-          return $lambdaMax / $n;
-     }
-
-     /**
-      * Hitung Consistency Index
-      */
-     public function calculateConsistencyIndex($lambdaMax, $n)
-     {
-          return ($lambdaMax - $n) / ($n - 1);
-     }
-
-     /**
-      * Hitung Consistency Ratio
-      */
-     public function calculateConsistencyRatio($ci, $n)
-     {
-          if ($n <= 2) return 0;
-
-          $ri = $this->randomIndex[$n] ?? 1.49;
-          return $ci / $ri;
-     }
-
-     /**
-      * Normalisasi matrix
-      */
-     public function normalizeMatrix($matrix)
-     {
-          $n = count($matrix);
-          $normalized = [];
-
-          // Hitung sum untuk setiap kolom
-          $columnSums = [];
-          for ($j = 0; $j < $n; $j++) {
-               $sum = 0;
-               for ($i = 0; $i < $n; $i++) {
-                    $sum += $matrix[$i][$j];
-               }
-               $columnSums[$j] = $sum;
           }
 
           // Normalisasi
@@ -159,100 +131,49 @@ class AhpCalculatorService
           return $normalized;
      }
 
-     /**
-      * Proses perhitungan AHP lengkap
-      */
-     public function calculateAHP()
+     private function calculatePriorityVector($normalizedMatrix)
      {
-          $result = $this->buildComparisonMatrix();
-          $matrix = $result['matrix'];
-          $kriteria = $result['kriteria'];
-          $n = count($matrix);
+          $n = count($normalizedMatrix);
+          $priorityVector = [];
 
-          // Validasi matrix tidak kosong
-          if ($n == 0) {
-               throw new Exception('Tidak ada data kriteria untuk perhitungan AHP');
+          for ($i = 0; $i < $n; $i++) {
+               $sum = array_sum($normalizedMatrix[$i]);
+               $priorityVector[$i] = $sum / $n;
           }
 
-          // Validasi matrix sudah lengkap
+          return $priorityVector;
+     }
+
+     private function calculateLambdaMax($matrix, $priorityVector)
+     {
+          $n = count($matrix);
+          $weightedSum = array_fill(0, $n, 0);
+
           for ($i = 0; $i < $n; $i++) {
                for ($j = 0; $j < $n; $j++) {
-                    if ($i != $j && $matrix[$i][$j] == 0) {
-                         throw new Exception('Matriks perbandingan belum lengkap. Mohon lengkapi semua perbandingan kriteria.');
-                    }
+                    $weightedSum[$i] += $matrix[$i][$j] * $priorityVector[$j];
                }
           }
 
-          // Hitung normalized matrix
-          $normalizedMatrix = $this->normalizeMatrix($matrix);
-
-          // Hitung priority weights
-          $weights = $this->calculatePriorityWeights($matrix);
-
-          // Hitung lambda max
-          $lambdaMax = $this->calculateLambdaMax($matrix, $weights);
-
-          // Hitung CI dan CR
-          $ci = $this->calculateConsistencyIndex($lambdaMax, $n);
-          $cr = $this->calculateConsistencyRatio($ci, $n);
-
-          $isConsistent = $cr <= 0.1;
-
-          // Simpan hasil perhitungan
-          $calculation = AhpCalculation::create([
-               'comparison_matrix' => $matrix,
-               'normalized_matrix' => $normalizedMatrix,
-               'priority_vector' => $weights,
-               'lambda_max' => $lambdaMax,
-               'consistency_index' => $ci,
-               'consistency_ratio' => $cr,
-               'is_consistent' => $isConsistent,
-               'calculated_at' => now()
-          ]);
-
-          // Update bobot kriteria jika konsisten
-          if ($isConsistent) {
-               foreach ($kriteria as $index => $k) {
-                    $k->update(['bobot' => $weights[$index]]);
+          $lambdaMax = 0;
+          for ($i = 0; $i < $n; $i++) {
+               if ($priorityVector[$i] != 0) {
+                    $lambdaMax += $weightedSum[$i] / $priorityVector[$i];
                }
           }
 
-          return [
-               'matrix' => $matrix,
-               'normalized_matrix' => $normalizedMatrix,
-               'weights' => $weights,
-               'lambda_max' => $lambdaMax,
-               'ci' => $ci,
-               'cr' => $cr,
-               'is_consistent' => $isConsistent,
-               'kriteria' => $kriteria,
-               'calculation_id' => $calculation->id
-          ];
+          return $lambdaMax / $n;
      }
 
-     /**
-      * Dapatkan hasil perhitungan AHP terbaru
-      */
-     public function getLatestCalculation()
-     {
-          return AhpCalculation::latest()->first();
-     }
-
-     /**
-      * Cek apakah matriks perbandingan sudah lengkap
-      */
      public function isComparisonMatrixComplete()
      {
-          $kriteria = Kriteria::count();
-          $totalComparisons = ($kriteria * ($kriteria - 1)) / 2;
+          $kriteriaCount = Kriteria::count();
+          $requiredComparisons = ($kriteriaCount * ($kriteriaCount - 1)) / 2;
           $existingComparisons = AhpComparison::count();
 
-          return $existingComparisons >= $totalComparisons;
+          return $existingComparisons >= $requiredComparisons;
      }
 
-     /**
-      * Generate pasangan kriteria yang belum dibandingkan
-      */
      public function getMissingComparisons()
      {
           $kriteria = Kriteria::orderBy('kode_kriteria')->get();
@@ -261,23 +182,25 @@ class AhpCalculatorService
 
           for ($i = 0; $i < $kriteria->count(); $i++) {
                for ($j = $i + 1; $j < $kriteria->count(); $j++) {
-                    $k1 = $kriteria[$i];
-                    $k2 = $kriteria[$j];
-
-                    $exists = $existing->contains(function ($comp) use ($k1, $k2) {
-                         return ($comp->kriteria_1 == $k1->id && $comp->kriteria_2 == $k2->id) ||
-                              ($comp->kriteria_1 == $k2->id && $comp->kriteria_2 == $k1->id);
+                    $exists = $existing->contains(function ($comp) use ($kriteria, $i, $j) {
+                         return ($comp->kriteria_1 == $kriteria[$i]->id && $comp->kriteria_2 == $kriteria[$j]->id) ||
+                              ($comp->kriteria_1 == $kriteria[$j]->id && $comp->kriteria_2 == $kriteria[$i]->id);
                     });
 
                     if (!$exists) {
                          $missing[] = [
-                              'kriteria_1' => $k1,
-                              'kriteria_2' => $k2
+                              'kriteria_1' => $kriteria[$i],
+                              'kriteria_2' => $kriteria[$j]
                          ];
                     }
                }
           }
 
           return $missing;
+     }
+
+     public function getLatestCalculation()
+     {
+          return AhpCalculation::latest('calculated_at')->first();
      }
 }

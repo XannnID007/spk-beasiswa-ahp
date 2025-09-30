@@ -1,3 +1,7 @@
+@php
+    use App\Helpers\NumberHelper;
+@endphp
+
 @extends('layouts.admin')
 
 @section('title', 'Data Kriteria')
@@ -40,9 +44,12 @@
                         <tr>
                             <td><strong class="text-primary">{{ $k->kode_kriteria }}</strong></td>
                             <td><strong>{{ $k->nama_kriteria }}</strong></td>
-                            <td class="text-center"><span class="badge bg-primary">{{ number_format($k->bobot, 4) }}</span>
+                            <td class="text-center">
+                                <span class="badge bg-primary">{{ NumberHelper::formatWeight($k->bobot) }}</span>
                             </td>
-                            <td class="text-center"><strong>{{ number_format($k->bobot * 100, 2) }}%</strong></td>
+                            <td class="text-center">
+                                <strong>{{ NumberHelper::formatPercentage($k->bobot) }}</strong>
+                            </td>
                             <td class="text-center">
                                 <span class="badge bg-info">{{ $k->sub_kriteria_count }} items</span>
                             </td>

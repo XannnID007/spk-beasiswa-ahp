@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Helpers\NumberHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SubKriteria extends Model
 {
     use HasFactory;
 
+    protected $appends = ['formatted_nilai_sub'];
     protected $table = 'sub_kriteria';
 
     protected $fillable = [
@@ -34,5 +36,10 @@ class SubKriteria extends Model
     public function penilaian()
     {
         return $this->hasMany(Penilaian::class);
+    }
+
+    public function getFormattedNilaiSubAttribute()
+    {
+        return NumberHelper::formatSubCriteria($this->nilai_sub);
     }
 }

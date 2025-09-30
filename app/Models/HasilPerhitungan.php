@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Helpers\NumberHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class HasilPerhitungan extends Model
 {
     use HasFactory;
+
+    protected $appends = ['formatted_skor'];
 
     protected $table = 'hasil_perhitungan';
 
@@ -38,5 +41,10 @@ class HasilPerhitungan extends Model
     public function scopeTidakLulus($query)
     {
         return $query->where('status_kelulusan', 'tidak_lulus');
+    }
+
+    public function getFormattedSkorAttribute()
+    {
+        return NumberHelper::formatScore($this->skor_akhir);
     }
 }

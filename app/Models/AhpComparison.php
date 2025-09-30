@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Helpers\NumberHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AhpComparison extends Model
 {
@@ -19,6 +20,13 @@ class AhpComparison extends Model
     protected $casts = [
         'nilai_perbandingan' => 'decimal:6',
     ];
+
+    protected $appends = ['formatted_nilai'];
+
+    public function getFormattedNilaiAttribute()
+    {
+        return NumberHelper::formatComparison($this->nilai_perbandingan);
+    }
 
     public function kriteriaFirst()
     {

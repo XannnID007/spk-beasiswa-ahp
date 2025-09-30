@@ -63,11 +63,15 @@ class AhpController extends Controller
         $request->validate([
             'kriteria_1' => 'required|exists:kriteria,id',
             'kriteria_2' => 'required|exists:kriteria,id|different:kriteria_1',
-            'nilai_perbandingan' => 'required|numeric|min:0.1|max:9',
+            'nilai_perbandingan' => 'required|numeric|min:0.111|max:9', // Batasi range AHP
             'keterangan' => 'nullable|string|max:255'
+        ], [
+            'nilai_perbandingan.min' => 'Nilai perbandingan minimal 1/9 (0.111)',
+            'nilai_perbandingan.max' => 'Nilai perbandingan maksimal 9',
+            'nilai_perbandingan.numeric' => 'Nilai perbandingan harus berupa angka'
         ]);
 
-        // Cek apakah perbandingan sudah ada
+        // Cek duplikasi
         $exists = AhpComparison::where(function ($query) use ($request) {
             $query->where('kriteria_1', $request->kriteria_1)
                 ->where('kriteria_2', $request->kriteria_2);
@@ -80,15 +84,30 @@ class AhpController extends Controller
             return back()->withErrors(['error' => 'Perbandingan kriteria ini sudah ada!']);
         }
 
+        // Simpan perbandingan
         AhpComparison::create($request->all());
+
+        // Auto-check konsistensi jika matriks sudah lengkap
+        if ($this->ahpService->isComparisonMatrixComplete()) {
+            try {
+                $result = $this->ahpService->calculateAHP();
+
+                if (!$result['is_consistent']) {
+                    return redirect()->route('admin.ahp.index')
+                        ->with('warning', 'Perbandingan ditambahkan, namun matriks tidak konsisten (CR = ' .
+                            number_format($result['cr'], 4) . '). Silakan perbaiki nilai perbandingan.');
+                }
+            } catch (\Exception $e) {
+                // Tetap simpan, tapi beri peringatan
+                return redirect()->route('admin.ahp.index')
+                    ->with('warning', 'Perbandingan ditambahkan, namun ada error dalam validasi konsistensi.');
+            }
+        }
 
         return redirect()->route('admin.ahp.index')
             ->with('success', 'Perbandingan kriteria berhasil ditambahkan!');
     }
 
-    /**
-     * Bulk input semua perbandingan
-     */
     public function bulkComparison(Request $request)
     {
         $kriteria = Kriteria::orderBy('kode_kriteria')->get();
@@ -96,7 +115,10 @@ class AhpController extends Controller
 
         $request->validate([
             'comparisons' => 'required|array|size:' . $totalPairs,
-            'comparisons.*' => 'required|numeric|min:0.111|max:9'
+            'comparisons.*' => 'required|numeric|min:0.111|max:9' // Validasi range AHP
+        ], [
+            'comparisons.*.min' => 'Nilai perbandingan minimal 1/9 (0.111)',
+            'comparisons.*.max' => 'Nilai perbandingan maksimal 9',
         ]);
 
         DB::beginTransaction();
@@ -117,9 +139,21 @@ class AhpController extends Controller
                 }
             }
 
+            // Validasi konsistensi langsung
+            $result = $this->ahpService->calculateAHP();
+
+            if (!$result['is_consistent']) {
+                DB::rollback();
+                return back()->withErrors([
+                    'error' => 'Matriks tidak konsisten! CR = ' . number_format($result['cr'], 4) .
+                        ' > 0.1. Silakan perbaiki nilai perbandingan.'
+                ]);
+            }
+
             DB::commit();
             return redirect()->route('admin.ahp.index')
-                ->with('success', 'Semua perbandingan kriteria berhasil disimpan!');
+                ->with('success', 'Semua perbandingan berhasil disimpan dan matriks konsisten! CR = ' .
+                    number_format($result['cr'], 4));
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);

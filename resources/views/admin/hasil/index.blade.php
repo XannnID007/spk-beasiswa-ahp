@@ -1,3 +1,6 @@
+@php
+    use App\Helpers\NumberHelper;
+@endphp
 @extends('layouts.admin')
 
 @section('title', 'Hasil & Ranking')
@@ -78,7 +81,9 @@
                             <td><strong>{{ $h->siswa->nis }}</strong></td>
                             <td>{{ $h->siswa->nama_lengkap }}</td>
                             <td class="text-center"><span class="badge bg-info">{{ $h->siswa->kelas }}</span></td>
-                            <td class="text-center"><strong>{{ number_format($h->skor_akhir, 6) }}</strong></td>
+                            <td class="text-center">
+                                <strong>{{ NumberHelper::formatScore($hasil->skor_akhir) }}</strong>
+                            </td>
                             <td class="text-center">
                                 @if ($h->status_kelulusan == 'lulus')
                                     <span class="badge bg-success">Lulus</span>
