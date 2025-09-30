@@ -2,21 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\BeasiswaController;
+use App\Http\Controllers\Admin\AhpController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\HasilController;
 use App\Http\Controllers\Admin\SiswaController;
+use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Siswa\ProfileController;
+use App\Http\Controllers\Admin\BeasiswaController;
 use App\Http\Controllers\Admin\KriteriaController;
-use App\Http\Controllers\Admin\SubKriteriaController;
-use App\Http\Controllers\Admin\PengajuanController as AdminPengajuanController;
 use App\Http\Controllers\Admin\PenilaianController;
 use App\Http\Controllers\Admin\PerhitunganController;
-use App\Http\Controllers\Admin\HasilController;
-use App\Http\Controllers\Admin\LaporanController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SubKriteriaController;
+use App\Http\Controllers\Siswa\HasilController as SiswaHasilController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PengajuanController as AdminPengajuanController;
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
 use App\Http\Controllers\Siswa\PengajuanController as SiswaPengajuanController;
-use App\Http\Controllers\Siswa\HasilController as SiswaHasilController;
-use App\Http\Controllers\Siswa\ProfileController;
 
 // Landing atau redirect ke login
 Route::get('/', function () {
@@ -63,10 +64,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('penilaian/{siswa_id}', [PenilaianController::class, 'update'])->name('penilaian.update');
     Route::delete('penilaian/{siswa_id}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy');
 
+    Route::prefix('ahp')->name('ahp.')->group(function () {
+        Route::get('/', [AhpController::class, 'index'])->name('index');
+        Route::get('/create-comparison', [AhpController::class, 'createComparison'])->name('create-comparison');
+        Route::post('/store-comparison', [AhpController::class, 'storeComparison'])->name('store-comparison');
+        Route::post('/bulk-comparison', [AhpController::class, 'bulkComparison'])->name('bulk-comparison');
+        Route::get('/calculate', [AhpController::class, 'calculate'])->name('calculate');
+        Route::get('/detail', [AhpController::class, 'detail'])->name('detail');
+        Route::get('/comparison/{id}/edit', [AhpController::class, 'editComparison'])->name('edit-comparison');
+        Route::put('/comparison/{id}', [AhpController::class, 'updateComparison'])->name('update-comparison');
+        Route::get('/comparison/{id}/delete', [AhpController::class, 'deleteComparison'])->name('delete-comparison');
+        Route::get('/reset', [AhpController::class, 'resetComparisons'])->name('reset');
+    });
+
     // Perhitungan AHP
     Route::get('perhitungan', [PerhitunganController::class, 'index'])->name('perhitungan.index');
     Route::post('perhitungan/proses', [PerhitunganController::class, 'proses'])->name('perhitungan.proses');
     Route::get('perhitungan/detail', [PerhitunganController::class, 'detail'])->name('perhitungan.detail');
+    Route::get('perhitungan/recalculate', [PerhitunganController::class, 'recalculate'])->name('perhitungan.recalculate');
 
     // Hasil & Ranking
     Route::get('hasil', [HasilController::class, 'index'])->name('hasil.index');

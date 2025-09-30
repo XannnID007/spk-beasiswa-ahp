@@ -8,16 +8,59 @@
         <p class="page-subtitle">Analytical Hierarchy Process - Perhitungan Calon Penerima Beasiswa</p>
     </div>
 
+    {{-- Validasi AHP --}}
+    <div class="content-card mb-4">
+        <h5 class="card-title mb-4">
+            <i class="fas fa-shield-check text-primary"></i> Validasi Metode AHP
+        </h5>
+
+        @if (!$isAhpComplete)
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Matriks Perbandingan Belum Lengkap!</strong>
+                Mohon lengkapi perbandingan kriteria di menu AHP Management sebelum melakukan perhitungan.
+                <div class="mt-2">
+                    <a href="{{ route('admin.ahp.index') }}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-arrow-right"></i> Ke AHP Management
+                    </a>
+                </div>
+            </div>
+        @elseif(!$ahpValidation['is_valid'])
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle"></i>
+                <strong>Validasi AHP Gagal!</strong> {{ $ahpValidation['message'] }}
+                <div class="mt-2">
+                    <a href="{{ route('admin.ahp.index') }}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-tools"></i> Perbaiki AHP
+                    </a>
+                </div>
+            </div>
+        @else
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <strong>Validasi AHP Berhasil!</strong> {{ $ahpValidation['message'] }}
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">Consistency Ratio:</small>
+                        <div class="fw-bold">{{ number_format($ahpValidation['cr'], 4) }} ≤ 0.1</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Lambda Max:</small>
+                        <div class="fw-bold">{{ number_format($ahpValidation['lambda_max'], 4) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Consistency Index:</small>
+                        <div class="fw-bold">{{ number_format($ahpValidation['ci'], 4) }}</div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+
     <div class="content-card mb-4">
         <h5 class="card-title mb-4">
             <i class="fas fa-info-circle text-primary"></i> Informasi Perhitungan
         </h5>
-
-        <div class="alert alert-info">
-            <i class="fas fa-lightbulb"></i>
-            Sistem akan menghitung skor akhir setiap siswa berdasarkan 4 kriteria dengan bobot yang telah ditentukan
-            menggunakan metode AHP.
-        </div>
 
         <div class="row">
             <div class="col-md-3">
@@ -47,13 +90,29 @@
         </div>
 
         <div class="mt-4">
-            <form action="{{ route('admin.perhitungan.proses') }}" method="POST"
-                onsubmit="return confirm('Yakin ingin memulai proses perhitungan? Hasil perhitungan sebelumnya akan diganti.')">
-                @csrf
-                <button type="submit" class="btn btn-primary btn-lg" {{ $siswaLengkap == 0 ? 'disabled' : '' }}>
+            @if ($ahpValidation['is_valid'] && $siswaLengkap > 0)
+                <form action="{{ route('admin.perhitungan.proses') }}" method="POST"
+                    onsubmit="return confirm('Yakin ingin memulai proses perhitungan? Hasil perhitungan sebelumnya akan diganti.')">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calculator"></i> Mulai Proses Perhitungan AHP
+                    </button>
+                </form>
+
+                @if ($sudahDihitung > 0)
+                    <a href="{{ route('admin.perhitungan.recalculate') }}" class="btn btn-warning btn-lg ms-2"
+                        onclick="return confirm('Hitung ulang dengan bobot AHP terbaru?')">
+                        <i class="fas fa-redo"></i> Hitung Ulang
+                    </a>
+                @endif
+            @else
+                <button type="button" class="btn btn-primary btn-lg" disabled>
                     <i class="fas fa-calculator"></i> Mulai Proses Perhitungan AHP
                 </button>
-            </form>
+                <small class="text-muted d-block mt-2">
+                    Proses perhitungan tidak dapat dilakukan karena validasi AHP belum berhasil atau belum ada data siswa.
+                </small>
+            @endif
         </div>
     </div>
 
@@ -94,10 +153,9 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal"
-                                        data-bs-target="#detailModal{{ $hasil->id }}">
+                                    <a href="{{ route('admin.hasil.show', $hasil->id) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-eye"></i>
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -109,12 +167,12 @@
         <!-- Detail Perhitungan AHP -->
         <div class="content-card">
             <h5 class="card-title mb-4">
-                <i class="fas fa-calculator text-primary"></i> Detail Perhitungan Metode AHP
+                <i class="fas fa-calculator text-primary"></i> Detail Metode AHP
             </h5>
 
             <!-- Bobot Kriteria -->
             <div class="calculation-section">
-                <h6 class="section-subtitle">1. Bobot Prioritas Kriteria</h6>
+                <h6 class="section-subtitle">1. Bobot Prioritas Kriteria (Hasil AHP)</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead class="table-light">
@@ -134,65 +192,46 @@
                                     <td class="text-center">{{ number_format($k->bobot * 100, 2) }}%</td>
                                 </tr>
                             @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Matriks Perbandingan Berpasangan -->
-            <div class="calculation-section">
-                <h6 class="section-subtitle">2. Matriks Perbandingan Berpasangan Kriteria</h6>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Kriteria</th>
-                                @foreach ($kriteria as $k)
-                                    <th class="text-center">{{ $k->kode_kriteria }}</th>
-                                @endforeach
+                            <tr class="table-info">
+                                <td colspan="2" class="text-end"><strong>TOTAL:</strong></td>
+                                <td class="text-center"><strong>{{ number_format($kriteria->sum('bobot'), 4) }}</strong>
+                                </td>
+                                <td class="text-center"><strong>100.00%</strong></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $matriks = [
-                                    ['K1', 1, 3, 2, 5],
-                                    ['K2', 0.33, 1, 3, 4],
-                                    ['K3', 0.5, 0.33, 1, 2],
-                                    ['K4', 0.2, 0.25, 0.5, 1],
-                                ];
-                            @endphp
-                            @foreach ($matriks as $row)
-                                <tr>
-                                    <td><strong>{{ $row[0] }}</strong></td>
-                                    @for ($i = 1; $i < count($row); $i++)
-                                        <td class="text-center">{{ $row[$i] }}</td>
-                                    @endfor
-                                </tr>
-                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Consistency Ratio -->
+            <!-- Rumus Perhitungan -->
             <div class="calculation-section">
-                <h6 class="section-subtitle">3. Uji Konsistensi</h6>
-                <div class="alert alert-success">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <strong>λ Maks:</strong> 4.212
-                        </div>
-                        <div class="col-md-4">
-                            <strong>CI:</strong> 0.0707
-                        </div>
-                        <div class="col-md-4">
-                            <strong>CR:</strong> 0.0786 < 0.1 <span class="badge bg-success ms-2">KONSISTEN</span>
-                        </div>
+                <h6 class="section-subtitle">2. Formula Perhitungan Skor Akhir</h6>
+                <div class="formula-box">
+                    <div class="formula-title">Metode Analytical Hierarchy Process (AHP)</div>
+                    <div class="formula-main">
+                        <strong>Skor Akhir = Σ (Bobot Kriteria × Nilai Sub-Kriteria)</strong>
                     </div>
+                    <div class="formula-detail">
+                        <p><strong>Dimana:</strong></p>
+                        <ul>
+                            @foreach ($kriteria as $k)
+                                <li>{{ $k->kode_kriteria }} = {{ $k->nama_kriteria }} (Bobot:
+                                    {{ number_format($k->bobot, 4) }})</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    @if ($ahpValidation['is_valid'])
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Validasi AHP:</strong><br>
+                            • Consistency Ratio = {{ number_format($ahpValidation['cr'], 4) }} ≤ 0.1 ✓<br>
+                            • Matriks perbandingan konsisten dan valid untuk perhitungan
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
-
     @endif
 
     <style>
@@ -261,6 +300,47 @@
             font-weight: 600;
             color: #1e3a8a;
             margin-bottom: 15px;
+        }
+
+        .formula-box {
+            background: #f0f9ff;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #1e3a8a;
+        }
+
+        .formula-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .formula-main {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #1e3a8a;
+        }
+
+        .formula-detail {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .formula-detail ul {
+            margin: 10px 0 0 0;
+            padding-left: 25px;
+        }
+
+        .formula-detail li {
+            margin-bottom: 5px;
+            font-size: 13px;
         }
 
         .table-bordered th,

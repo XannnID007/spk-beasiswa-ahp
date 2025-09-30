@@ -187,7 +187,7 @@
 
         .stat-label {
             font-size: 13px;
-            color: #6b7280;
+            color: #ffffff;
             margin-top: 2px;
         }
 
@@ -264,7 +264,8 @@
                     labels: ['Pending', 'Diverifikasi', 'Ditolak'],
                     datasets: [{
                         data: [{{ $pengajuanPending }}, {{ $pengajuanDiverifikasi }},
-                            {{ $pengajuanDitolak }}],
+                            {{ $pengajuanDitolak }}
+                        ],
                         backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
                     }]
                 },

@@ -404,7 +404,15 @@
                 </a>
             </li>
 
-            <div class="menu-title">Perhitungan AHP</div>
+            <div class="menu-title">Metode AHP</div>
+
+            <li class="menu-item">
+                <a href="{{ route('admin.ahp.index') }}"
+                    class="menu-link {{ request()->routeIs('admin.ahp.*') ? 'active' : '' }}">
+                    <i class="fas fa-matrix"></i>
+                    <span>AHP Management</span>
+                </a>
+            </li>
 
             <li class="menu-item">
                 <a href="{{ route('admin.penilaian.index') }}"

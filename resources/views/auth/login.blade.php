@@ -9,252 +9,486 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #3b82f6;
-            --light-blue: #dbeafe;
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
+            overflow: hidden;
+            background: #f3f4f6;
+        }
+
+        /* Background Image */
+        .bg-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.6) 0%, rgba(59, 130, 246, 0.5) 50%, rgba(96, 165, 250, 0.4) 100%);
+        }
+
+        /* Floating Shapes */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+        }
+
+        .shape-2 {
+            width: 250px;
+            height: 250px;
+            bottom: -120px;
+            left: -120px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+
+        /* Login Container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        /* Background Image dengan Dark Overlay */
-        body::before {
+        /* Header */
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 25px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .card-header::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('/img/bg.jpg') no-repeat center center;
-            background-size: cover;
-            filter: brightness(0.3);
-            z-index: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
 
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
+        .logo-box {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 16px;
+            padding: 10px;
+            margin: 0 auto 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1;
         }
 
-        .login-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .login-header {
-            background: var(--primary-color);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .login-header .logo-img {
-            width: 80px;
-            height: 80px;
+        .logo-box img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            background: white;
-            padding: 8px;
         }
 
-        .login-header h4 {
+        .card-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header p {
+            font-size: 12px;
+            opacity: 0.95;
             margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Body */
+        .card-body {
+            padding: 25px 30px;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text h2 {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
         }
 
-        .login-header p {
-            margin: 5px 0 0 0;
+        .welcome-text p {
             font-size: 13px;
-            opacity: 0.9;
+            color: #6b7280;
+            margin: 0;
         }
 
-        .login-body {
-            padding: 30px;
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
         }
 
         .form-label {
-            font-weight: 500;
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
             color: #374151;
-            font-size: 14px;
             margin-bottom: 8px;
         }
 
-        .form-control {
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .input-group-text {
-            background: #f3f4f6;
-            border: 2px solid #e5e7eb;
-            border-right: none;
-            color: #6b7280;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-        }
-
-        .btn-login {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-login:hover {
-            background: #1e40af;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
-        }
-
-        .divider {
-            text-align: center;
-            margin: 20px 0;
+        .input-wrapper {
             position: relative;
         }
 
-        .divider::before {
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        /* Options */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .remember-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .remember-checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--secondary);
+        }
+
+        .forgot-link {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: var(--primary);
+        }
+
+        /* Button */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
             content: '';
             position: absolute;
             top: 50%;
-            left: 0;
-            right: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-submit:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
             height: 1px;
             background: #e5e7eb;
         }
 
         .divider span {
-            background: white;
-            padding: 0 15px;
-            position: relative;
-            color: #6b7280;
-            font-size: 13px;
+            padding: 0 12px;
         }
 
+        /* Register Link */
         .register-link {
             text-align: center;
-            margin-top: 20px;
             font-size: 14px;
             color: #6b7280;
         }
 
         .register-link a {
-            color: var(--primary-color);
+            color: var(--secondary);
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.3s;
         }
 
         .register-link a:hover {
-            color: var(--secondary-color);
-            text-decoration: underline;
+            color: var(--primary);
         }
 
+        /* Alert */
         .alert {
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
             border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .password-toggle {
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.3s ease;
+        .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
         }
 
-        .password-toggle:hover {
-            color: var(--primary-color);
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            .card-header {
+                padding: 25px 20px;
+            }
+
+            .logo-box {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card-header h1 {
+                font-size: 20px;
+            }
+
+            .card-body {
+                padding: 25px 20px;
+            }
+
+            .welcome-text h2 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Background -->
+    <div class="bg-wrapper">
+        <img src="{{ asset('img/bg.jpg') }}" alt="Background" class="bg-image">
+        <div class="gradient-overlay"></div>
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <!-- Login Container -->
     <div class="login-container">
         <div class="login-card">
-            <div class="login-header">
-                <img src="{{ asset('img/logo.jpg') }}" alt="Logo" class="logo-img">
-                <h4>SPK Beasiswa</h4>
+            <!-- Header -->
+            <div class="card-header">
+                <div class="logo-box">
+                    <img src="{{ asset('img/logo.jpg') }}" alt="Logo">
+                </div>
+                <h1>SPK Beasiswa</h1>
                 <p>MA Muhammadiyah 1 Bandung</p>
             </div>
 
-            <div class="login-body">
+            <!-- Body -->
+            <div class="card-body">
+                <div class="welcome-text">
+                    <h2>Selamat Datang!</h2>
+                    <p>Masuk ke akun Anda untuk melanjutkan</p>
+                </div>
+
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
 
                     @if (session('error'))
                         <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>{{ session('error') }}</span>
                         </div>
                     @endif
 
                     @if (session('success'))
                         <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                            <i class="fas fa-check-circle"></i>
+                            <span>{{ session('success') }}</span>
                         </div>
                     @endif
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label class="form-label">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            <input type="email" class="form-control" name="email" placeholder="Masukkan email"
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" name="email" class="form-control" placeholder="nama@email.com"
                                 required>
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                            <input type="password" class="form-control" name="password" id="password"
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" name="password" id="password" class="form-control"
                                 placeholder="Masukkan password" required>
-                            <span class="input-group-text password-toggle" onclick="togglePassword()">
-                                <i class="fas fa-eye" id="toggleIcon"></i>
-                            </span>
+                            <i class="fas fa-eye password-toggle" id="togglePassword" onclick="togglePassword()"></i>
                         </div>
                     </div>
 
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                        <label class="form-check-label" for="remember" style="font-size: 14px;">
-                            Ingat Saya
+                    <div class="form-options">
+                        <label class="remember-checkbox">
+                            <input type="checkbox" name="remember">
+                            <span>Ingat saya</span>
                         </label>
+                        <a href="#" class="forgot-link">Lupa password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-login">
-                        <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-sign-in-alt me-2"></i>Masuk
                     </button>
 
                     <div class="divider">
@@ -262,7 +496,7 @@
                     </div>
 
                     <div class="register-link">
-                        Belum punya akun? <a href="{{ route('register') }}">Daftar Sekarang</a>
+                        Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
                     </div>
                 </form>
             </div>
@@ -271,17 +505,17 @@
 
     <script>
         function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
+            const password = document.getElementById('password');
+            const toggle = document.getElementById('togglePassword');
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+            if (password.type === 'password') {
+                password.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
             } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
+                password.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
             }
         }
     </script>
