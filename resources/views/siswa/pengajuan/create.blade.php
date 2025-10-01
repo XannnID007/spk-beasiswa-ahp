@@ -202,7 +202,7 @@
                     @error('berkas_pendukung')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Upload KK, Slip Gaji, atau dokumen pendukung lainnya (PDF/JPG/PNG, Max
+                    <small class="text-muted">Upload foto KK, dan SKTM (jika ada) dalam bentuk (PDF, Max
                         2MB)</small>
                 </div>
 

@@ -143,46 +143,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="content-card mt-3">
-                <h5 class="section-title">Timeline</h5>
-
-                <div class="timeline">
-                    <div class="timeline-item active">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Pengajuan Diterima</div>
-                            <div class="timeline-date">{{ $pengajuan->tanggal_pengajuan->format('d M Y') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item {{ $pengajuan->status != 'pending' ? 'active' : '' }}">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Verifikasi Data</div>
-                            <div class="timeline-date">
-                                {{ $pengajuan->status != 'pending' ? 'Selesai' : 'Menunggu' }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Proses Seleksi</div>
-                            <div class="timeline-date">Menunggu</div>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">Pengumuman Hasil</div>
-                            <div class="timeline-date">Menunggu</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 

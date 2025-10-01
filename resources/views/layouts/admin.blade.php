@@ -428,7 +428,7 @@
                 <a href="{{ route('admin.perhitungan.index') }}"
                     class="menu-link {{ request()->routeIs('admin.perhitungan.*') ? 'active' : '' }}">
                     <i class="fas fa-calculator"></i>
-                    <span>Hitung & Ranking</span>
+                    <span>Proses Perhitungan</span>
                 </a>
             </li>
 

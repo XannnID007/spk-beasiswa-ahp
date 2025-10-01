@@ -213,7 +213,7 @@
 
         .info-label {
             font-size: 13px;
-            color: #6b7280;
+            color: #111827;
             margin-bottom: 4px;
         }
 

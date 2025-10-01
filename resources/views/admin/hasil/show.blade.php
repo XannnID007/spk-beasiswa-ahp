@@ -91,14 +91,14 @@
                                     <td>{{ $p->subKriteria->nama_sub_kriteria }}</td>
                                     <td class="text-center">{{ number_format($p->subKriteria->nilai_sub, 4) }}</td>
                                     <td class="text-center">
-                                        <strong>{{ number_format($p->kriteria->bobot * $p->subKriteria->nilai_sub, 6) }}</strong>
+                                        <strong>{{ number_format($p->kriteria->bobot * $p->subKriteria->nilai_sub, 4) }}</strong>
                                     </td>
                                 </tr>
                             @endforeach
                             <tr class="table-primary">
                                 <td colspan="4" class="text-end"><strong>TOTAL SKOR AKHIR:</strong></td>
                                 <td class="text-center">
-                                    <strong style="font-size: 16px;">{{ number_format($hasil->skor_akhir, 6) }}</strong>
+                                    <strong style="font-size: 16px;">{{ number_format($hasil->skor_akhir, 4) }}</strong>
                                 </td>
                             </tr>
                         </tbody>
