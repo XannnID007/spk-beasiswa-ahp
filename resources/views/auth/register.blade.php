@@ -29,7 +29,7 @@
             position: relative;
             overflow-x: hidden;
             background: #f3f4f6;
-            padding: 40px 0;
+            padding: 30px 0;
         }
 
         /* Background Image */
@@ -93,12 +93,12 @@
             }
         }
 
-        /* Register Container */
+        /* Register Container - UKURAN DIPERKECIL */
         .register-container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 550px;
+            max-width: 450px;
             padding: 20px;
         }
 
@@ -106,15 +106,15 @@
         .register-card {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        /* Header */
+        /* Header - DIPERKECIL */
         .card-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 25px 30px;
+            padding: 20px 25px;
             text-align: center;
             color: white;
             position: relative;
@@ -132,12 +132,12 @@
         }
 
         .logo-box {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: white;
-            border-radius: 16px;
-            padding: 10px;
-            margin: 0 auto 12px;
+            border-radius: 12px;
+            padding: 8px;
+            margin: 0 auto 10px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1;
@@ -150,40 +150,40 @@
         }
 
         .card-header h1 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             position: relative;
             z-index: 1;
         }
 
         .card-header p {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.95;
             margin: 0;
             position: relative;
             z-index: 1;
         }
 
-        /* Body */
+        /* Body - DIPERKECIL */
         .card-body {
-            padding: 25px 30px;
+            padding: 20px 25px;
         }
 
         .welcome-text {
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .welcome-text h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #111827;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .welcome-text p {
-            font-size: 13px;
+            font-size: 12px;
             color: #6b7280;
             margin: 0;
         }
@@ -191,19 +191,19 @@
         /* Info Box */
         .info-box {
             background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-            border-left: 4px solid var(--secondary);
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            font-size: 12px;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 11px;
             color: #1e40af;
             display: flex;
             align-items: start;
-            gap: 8px;
+            gap: 7px;
         }
 
         .info-box i {
-            font-size: 14px;
+            font-size: 13px;
             margin-top: 1px;
         }
 
@@ -211,20 +211,20 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 14px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .form-label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 7px;
+            margin-bottom: 5px;
         }
 
         .required {
@@ -237,20 +237,20 @@
 
         .input-icon {
             position: absolute;
-            left: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #9ca3af;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-control,
         .form-select {
             width: 100%;
-            padding: 10px 12px 10px 38px;
+            padding: 9px 10px 9px 34px;
             border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 13px;
+            border-radius: 8px;
+            font-size: 12px;
             transition: all 0.3s ease;
             background: #f9fafb;
         }
@@ -259,7 +259,7 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
+            background-position: right 10px center;
             cursor: pointer;
         }
 
@@ -273,12 +273,12 @@
 
         .password-toggle {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #9ca3af;
-            font-size: 14px;
+            font-size: 13px;
             transition: color 0.3s;
         }
 
@@ -289,16 +289,16 @@
         /* Button */
         .btn-submit {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            margin-top: 8px;
             position: relative;
             overflow: hidden;
         }
@@ -334,9 +334,9 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 18px 0;
+            margin: 14px 0;
             color: #9ca3af;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .divider::before,
@@ -348,13 +348,13 @@
         }
 
         .divider span {
-            padding: 0 12px;
+            padding: 0 10px;
         }
 
         /* Login Link */
         .login-link {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: #6b7280;
         }
 
@@ -371,10 +371,10 @@
 
         /* Alert */
         .alert {
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-bottom: 16px;
+            padding: 9px 11px;
+            border-radius: 8px;
+            font-size: 11px;
+            margin-bottom: 12px;
             border: none;
         }
 
@@ -384,12 +384,12 @@
         }
 
         .alert-danger ul {
-            margin: 6px 0 0 0;
-            padding-left: 18px;
+            margin: 5px 0 0 0;
+            padding-left: 16px;
         }
 
         .alert-danger li {
-            margin: 3px 0;
+            margin: 2px 0;
         }
 
         /* Responsive */
@@ -400,24 +400,24 @@
             }
 
             .card-header {
-                padding: 25px 20px;
+                padding: 18px 20px;
             }
 
             .logo-box {
-                width: 60px;
-                height: 60px;
+                width: 45px;
+                height: 45px;
             }
 
             .card-header h1 {
-                font-size: 20px;
+                font-size: 17px;
             }
 
             .card-body {
-                padding: 25px 20px;
+                padding: 20px;
             }
 
             .welcome-text h2 {
-                font-size: 20px;
+                font-size: 17px;
             }
 
             .form-row {
@@ -465,7 +465,7 @@
                     @csrf
 
                     @if ($errors->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" id="alert-error">
                             <strong><i class="fas fa-exclamation-circle"></i> Terdapat kesalahan:</strong>
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -579,6 +579,20 @@
                 toggle.classList.add('fa-eye');
             }
         }
+
+        // AUTO HIDE ALERT SETELAH 5 DETIK
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertError = document.getElementById('alert-error');
+
+            if (alertError) {
+                setTimeout(() => {
+                    alertError.style.opacity = '0';
+                    alertError.style.transform = 'translateY(-10px)';
+                    alertError.style.transition = 'all 0.3s ease';
+                    setTimeout(() => alertError.remove(), 300);
+                }, 5000);
+            }
+        });
     </script>
 </body>
 

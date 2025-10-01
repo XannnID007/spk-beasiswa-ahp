@@ -92,12 +92,12 @@
             }
         }
 
-        /* Login Container */
+        /* Login Container - UKURAN DIPERKECIL */
         .login-container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 450px;
+            max-width: 380px;
             padding: 20px;
         }
 
@@ -105,15 +105,15 @@
         .login-card {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        /* Header */
+        /* Header - DIPERKECIL */
         .card-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 25px 30px;
+            padding: 20px 25px;
             text-align: center;
             color: white;
             position: relative;
@@ -131,12 +131,12 @@
         }
 
         .logo-box {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: white;
-            border-radius: 16px;
-            padding: 10px;
-            margin: 0 auto 12px;
+            border-radius: 12px;
+            padding: 8px;
+            margin: 0 auto 10px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1;
@@ -149,55 +149,55 @@
         }
 
         .card-header h1 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             position: relative;
             z-index: 1;
         }
 
         .card-header p {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.95;
             margin: 0;
             position: relative;
             z-index: 1;
         }
 
-        /* Body */
+        /* Body - DIPERKECIL */
         .card-body {
-            padding: 25px 30px;
+            padding: 20px 25px;
         }
 
         .welcome-text {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .welcome-text h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #111827;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .welcome-text p {
-            font-size: 13px;
+            font-size: 12px;
             color: #6b7280;
             margin: 0;
         }
 
-        /* Form */
+        /* Form - DIPERKECIL */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .form-label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .input-wrapper {
@@ -206,19 +206,19 @@
 
         .input-icon {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #9ca3af;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 14px 12px 42px;
+            padding: 10px 12px 10px 38px;
             border: 2px solid #e5e7eb;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.3s ease;
             background: #f9fafb;
         }
@@ -232,12 +232,12 @@
 
         .password-toggle {
             position: absolute;
-            right: 14px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #9ca3af;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.3s;
         }
 
@@ -250,21 +250,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            font-size: 13px;
+            margin-bottom: 16px;
+            font-size: 12px;
         }
 
         .remember-checkbox {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             cursor: pointer;
             color: #6b7280;
         }
 
         .remember-checkbox input {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
             cursor: pointer;
             accent-color: var(--secondary);
         }
@@ -283,12 +283,12 @@
         /* Button */
         .btn-submit {
             width: 100%;
-            padding: 13px;
+            padding: 11px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -327,9 +327,9 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 20px 0;
+            margin: 16px 0;
             color: #9ca3af;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .divider::before,
@@ -341,13 +341,13 @@
         }
 
         .divider span {
-            padding: 0 12px;
+            padding: 0 10px;
         }
 
         /* Register Link */
         .register-link {
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
         }
 
@@ -362,16 +362,29 @@
             color: var(--primary);
         }
 
-        /* Alert */
+        /* Alert - AUTO HIDE */
         .alert {
             padding: 10px 12px;
             border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 16px;
+            font-size: 12px;
+            margin-bottom: 14px;
             border: none;
             display: flex;
             align-items: center;
             gap: 8px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert-danger {
@@ -392,24 +405,24 @@
             }
 
             .card-header {
-                padding: 25px 20px;
+                padding: 18px 20px;
             }
 
             .logo-box {
-                width: 60px;
-                height: 60px;
+                width: 45px;
+                height: 45px;
             }
 
             .card-header h1 {
-                font-size: 20px;
+                font-size: 17px;
             }
 
             .card-body {
-                padding: 25px 20px;
+                padding: 20px;
             }
 
             .welcome-text h2 {
-                font-size: 20px;
+                font-size: 17px;
             }
         }
     </style>
@@ -447,14 +460,14 @@
                     @csrf
 
                     @if (session('error'))
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" id="alert-error">
                             <i class="fas fa-exclamation-circle"></i>
                             <span>{{ session('error') }}</span>
                         </div>
                     @endif
 
                     @if (session('success'))
-                        <div class="alert alert-success">
+                        <div class="alert alert-success" id="alert-success">
                             <i class="fas fa-check-circle"></i>
                             <span>{{ session('success') }}</span>
                         </div>
@@ -484,7 +497,6 @@
                             <input type="checkbox" name="remember">
                             <span>Ingat saya</span>
                         </label>
-                        <a href="#" class="forgot-link">Lupa password?</a>
                     </div>
 
                     <button type="submit" class="btn-submit">
@@ -492,11 +504,6 @@
                     </button>
 
                     <div class="divider">
-                        <span>atau</span>
-                    </div>
-
-                    <div class="register-link">
-                        Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
                     </div>
                 </form>
             </div>
@@ -518,6 +525,28 @@
                 toggle.classList.add('fa-eye');
             }
         }
+
+        // AUTO HIDE ALERT SETELAH 4 DETIK
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertSuccess = document.getElementById('alert-success');
+            const alertError = document.getElementById('alert-error');
+
+            if (alertSuccess) {
+                setTimeout(() => {
+                    alertSuccess.style.opacity = '0';
+                    alertSuccess.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alertSuccess.remove(), 300);
+                }, 4000);
+            }
+
+            if (alertError) {
+                setTimeout(() => {
+                    alertError.style.opacity = '0';
+                    alertError.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alertError.remove(), 300);
+                }, 4000);
+            }
+        });
     </script>
 </body>
 

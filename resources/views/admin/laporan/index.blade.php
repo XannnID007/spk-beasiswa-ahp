@@ -5,194 +5,159 @@
 @section('content')
     <div class="page-header">
         <h1 class="page-title">Cetak Laporan</h1>
-        <p class="page-subtitle">Export laporan hasil seleksi beasiswa</p>
+        <p class="page-subtitle">Ekspor laporan hasil seleksi beasiswa</p>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="stat-box">
-                <i class="fas fa-users"></i>
-                <div class="stat-number">{{ $totalSiswa }}</div>
-                <div class="stat-text">Total Siswa</div>
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card bg-primary">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $totalSiswa }}</div>
+                    <div class="stat-label">Total Siswa</div>
+                </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="stat-box">
-                <i class="fas fa-check-circle text-success"></i>
-                <div class="stat-number">{{ $totalLulus }}</div>
-                <div class="stat-text">Lulus Seleksi</div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card bg-success">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $totalLulus }}</div>
+                    <div class="stat-label">Lulus Seleksi</div>
+                </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="stat-box">
-                <i class="fas fa-times-circle text-danger"></i>
-                <div class="stat-number">{{ $totalTidakLulus }}</div>
-                <div class="stat-text">Tidak Lulus</div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card bg-danger">
+                <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $totalTidakLulus }}</div>
+                    <div class="stat-label">Tidak Lulus</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="content-card">
-        <h5 class="card-title mb-4">
-            <i class="fas fa-file-export text-primary"></i> Export Laporan
-        </h5>
+        <div class="card-header-modern">
+            <h5 class="card-title">
+                <i class="fas fa-file-export text-primary"></i> Opsi Ekspor Laporan
+            </h5>
+        </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="export-card">
-                    <div class="export-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <div class="export-content">
-                        <h6>Laporan PDF</h6>
-                        <p>Export laporan lengkap dalam format PDF</p>
-
-                        <form action="{{ route('admin.laporan.cetak-pdf') }}" method="GET" class="mt-3">
-                            <div class="mb-3">
-                                <label class="form-label">Filter Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="all">Semua Status</option>
-                                    <option value="lulus">Hanya yang Lulus</option>
-                                    <option value="tidak_lulus">Hanya yang Tidak Lulus</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="fas fa-download"></i> Download PDF
-                            </button>
-                        </form>
+        <form action="#" method="GET" id="laporanForm">
+            <div class="row p-4">
+                <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">Filter Status Kelulusan</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="all">Semua Status</option>
+                        <option value="lulus">Hanya yang Lulus</option>
+                        <option value="tidak_lulus">Hanya yang Tidak Lulus</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Pilih Format Laporan</label>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="button" class="btn btn-danger flex-fill"
+                            onclick="submitForm('{{ route('admin.laporan.cetak-pdf') }}')">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </button>
+                        <button type="button" class="btn btn-success flex-fill"
+                            onclick="submitForm('{{ route('admin.laporan.export-excel') }}')">
+                            <i class="fas fa-file-excel"></i> Download Excel
+                        </button>
                     </div>
                 </div>
             </div>
+        </form>
 
-            <div class="col-md-6 mb-4">
-                <div class="export-card">
-                    <div class="export-icon">
-                        <i class="fas fa-file-excel"></i>
-                    </div>
-                    <div class="export-content">
-                        <h6>Laporan Excel</h6>
-                        <p>Export laporan lengkap dalam format Excel</p>
-
-                        <form action="{{ route('admin.laporan.export-excel') }}" method="GET" class="mt-3">
-                            <div class="mb-3">
-                                <label class="form-label">Filter Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="all">Semua Status</option>
-                                    <option value="lulus">Hanya yang Lulus</option>
-                                    <option value="tidak_lulus">Hanya yang Tidak Lulus</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-download"></i> Download Excel
-                            </button>
-                        </form>
-                    </div>
-                </div>
+        <div class="px-4 pb-4">
+            <div class="alert alert-info mb-0">
+                <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Informasi Laporan</h6>
+                <p class="mb-1">Laporan akan berisi daftar siswa yang telah diseleksi, lengkap dengan skor akhir, ranking,
+                    dan status kelulusan. Pastikan proses perhitungan telah dijalankan sebelum mencetak laporan.</p>
+                <ul class="mb-0 small">
+                    <li>Kop surat resmi sekolah.</li>
+                    <li>Informasi kriteria dan bobot penilaian yang digunakan.</li>
+                </ul>
             </div>
-        </div>
-    </div>
-
-    <div class="content-card mt-4">
-        <h5 class="card-title mb-4">
-            <i class="fas fa-info-circle text-primary"></i> Informasi Laporan
-        </h5>
-
-        <div class="alert alert-info">
-            <h6><i class="fas fa-lightbulb"></i> Isi Laporan:</h6>
-            <ul class="mb-0">
-                <li>Daftar lengkap siswa dengan ranking</li>
-                <li>Skor akhir hasil perhitungan AHP</li>
-                <li>Status kelulusan setiap siswa</li>
-                <li>Informasi kriteria dan bobot penilaian</li>
-                <li>Kop surat resmi sekolah</li>
-            </ul>
-        </div>
-
-        <div class="alert alert-warning">
-            <h6><i class="fas fa-exclamation-triangle"></i> Catatan:</h6>
-            <p class="mb-0">Pastikan data hasil perhitungan sudah tersedia sebelum mencetak laporan. Jika belum ada hasil,
-                silakan lakukan proses perhitungan terlebih dahulu di menu <strong>Proses Perhitungan</strong>.</p>
         </div>
     </div>
 
     <style>
-        .stat-box {
+        /* Menggunakan gaya dari halaman lain untuk konsistensi */
+        .stat-card {
             background: white;
-            padding: 30px;
             border-radius: 12px;
+            padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            color: white;
         }
 
-        .stat-box i {
-            font-size: 48px;
-            color: #3b82f6;
-            margin-bottom: 15px;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .stat-number {
-            font-size: 36px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 5px;
-        }
-
-        .stat-text {
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .export-card {
-            background: white;
-            border: 2px solid #e5e7eb;
+        .stat-icon {
+            width: 60px;
+            height: 60px;
             border-radius: 12px;
-            padding: 25px;
-            height: 100%;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        .export-card:hover {
-            border-color: #3b82f6;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        .stat-content {
+            flex: 1;
         }
 
-        .export-icon {
-            text-align: center;
-            margin-bottom: 20px;
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
         }
 
-        .export-icon i {
-            font-size: 64px;
-            color: #3b82f6;
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 2px;
         }
 
-        .export-content h6 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 10px;
-        }
-
-        .export-content p {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 0;
+        .card-header-modern {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
         }
 
         .card-title {
             font-size: 16px;
             font-weight: 600;
             color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .alert h6 {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .alert ul {
-            padding-left: 25px;
+        .form-label {
+            font-weight: 500;
+            color: #374151;
             font-size: 14px;
+            margin-bottom: 8px;
         }
     </style>
+
+    <script>
+        function submitForm(action) {
+            const form = document.getElementById('laporanForm');
+            form.action = action;
+            form.submit();
+        }
+    </script>
 @endsection

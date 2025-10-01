@@ -7,6 +7,8 @@ use App\Models\HasilPerhitungan;
 use App\Models\Kriteria;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\LaporanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {
@@ -39,12 +41,11 @@ class LaporanController extends Controller
         return $pdf->download('Laporan_Hasil_Seleksi_Beasiswa_' . date('Y-m-d') . '.pdf');
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        // Untuk export Excel, bisa menggunakan Laravel Excel package
-        // composer require maatwebsite/excel
+        $status = $request->input('status', 'all');
+        $fileName = 'laporan-hasil-seleksi-' . date('Y-m-d') . '.xlsx';
 
-        // Sementara redirect ke PDF
-        return redirect()->route('admin.laporan.cetak-pdf');
+        return Excel::download(new LaporanExport($status), $fileName);
     }
 }
