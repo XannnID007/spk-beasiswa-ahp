@@ -82,7 +82,7 @@
                             <td>{{ $h->siswa->nama_lengkap }}</td>
                             <td class="text-center"><span class="badge bg-info">{{ $h->siswa->kelas }}</span></td>
                             <td class="text-center">
-                                <strong>{{ NumberHelper::formatScore($hasil->skor_akhir) }}</strong>
+                                <strong>{{ NumberHelper::formatScore($h->skor_akhir) }}</strong>
                             </td>
                             <td class="text-center">
                                 @if ($h->status_kelulusan == 'lulus')

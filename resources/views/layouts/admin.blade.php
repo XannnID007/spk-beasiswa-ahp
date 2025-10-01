@@ -362,13 +362,13 @@
                 </a>
             </li>
 
-            <div class="menu-title">Master Data</div>
+            <div class="menu-title">Data Master</div>
 
             <li class="menu-item">
                 <a href="{{ route('admin.beasiswa.index') }}"
                     class="menu-link {{ request()->routeIs('admin.beasiswa.*') ? 'active' : '' }}">
                     <i class="fas fa-award"></i>
-                    <span>Data Beasiswa</span>
+                    <span>Program Beasiswa</span>
                 </a>
             </li>
 
@@ -384,7 +384,7 @@
                 <a href="{{ route('admin.kriteria.index') }}"
                     class="menu-link {{ request()->routeIs('admin.kriteria.*') ? 'active' : '' }}">
                     <i class="fas fa-list-check"></i>
-                    <span>Data Kriteria</span>
+                    <span>Kriteria Penilaian</span>
                 </a>
             </li>
 
@@ -392,25 +392,17 @@
                 <a href="{{ route('admin.sub-kriteria.index') }}"
                     class="menu-link {{ request()->routeIs('admin.sub-kriteria.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
-                    <span>Data Sub-Kriteria</span>
+                    <span>Sub-Kriteria</span>
                 </a>
             </li>
+
+            <div class="menu-title">Pengajuan & Verifikasi</div>
 
             <li class="menu-item">
                 <a href="{{ route('admin.pengajuan.index') }}"
                     class="menu-link {{ request()->routeIs('admin.pengajuan.*') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i>
-                    <span>Pengajuan Beasiswa</span>
-                </a>
-            </li>
-
-            <div class="menu-title">Metode AHP</div>
-
-            <li class="menu-item">
-                <a href="{{ route('admin.ahp.index') }}"
-                    class="menu-link {{ request()->routeIs('admin.ahp.*') ? 'active' : '' }}">
-                    <i class="fas fa-matrix"></i>
-                    <span>AHP Management</span>
+                    <span>Verifikasi Pengajuan</span>
                 </a>
             </li>
 
@@ -422,11 +414,21 @@
                 </a>
             </li>
 
+            <div class="menu-title">Proses AHP</div>
+
+            <li class="menu-item">
+                <a href="{{ route('admin.ahp.index') }}"
+                    class="menu-link {{ request()->routeIs('admin.ahp.*') ? 'active' : '' }}">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Perbandingan Kriteria</span>
+                </a>
+            </li>
+
             <li class="menu-item">
                 <a href="{{ route('admin.perhitungan.index') }}"
                     class="menu-link {{ request()->routeIs('admin.perhitungan.*') ? 'active' : '' }}">
                     <i class="fas fa-calculator"></i>
-                    <span>Proses Perhitungan</span>
+                    <span>Hitung & Ranking</span>
                 </a>
             </li>
 
@@ -434,7 +436,7 @@
                 <a href="{{ route('admin.hasil.index') }}"
                     class="menu-link {{ request()->routeIs('admin.hasil.*') ? 'active' : '' }}">
                     <i class="fas fa-trophy"></i>
-                    <span>Hasil & Ranking</span>
+                    <span>Hasil Seleksi</span>
                 </a>
             </li>
 
@@ -448,13 +450,13 @@
                 </a>
             </li>
 
-            <div class="menu-title">Pengaturan</div>
+            <div class="menu-title">Pengaturan Sistem</div>
 
             <li class="menu-item">
                 <a href="{{ route('admin.users.index') }}"
                     class="menu-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Manajemen User</span>
+                    <i class="fas fa-user-shield"></i>
+                    <span>Kelola Admin</span>
                 </a>
             </li>
         </ul>
